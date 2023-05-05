@@ -1,0 +1,39 @@
+{
+  "name": "trivid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0",
+    "start": "next start",
+    "build": "next build",
+    "lint": "next lint",
+    "prettier": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@livepeer/react": "^2.4.3",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.12.1",
+    "@spheron/browser-upload": "^1.0.0",
+    "@spheron/storage": "^1.0.13",
+    "@tableland/sdk": "^4.2.1",
+    "dotenv": "^16.0.3",
+    "next": "^13.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.8.0",
+    "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.0",
+    "@types/react": "^18.0.38",
+    "eslint": "^8.39.0",
+    "eslint-config-next": "^13.3.1",
+    "prettier": "^2.8.8"
+  }
+}
