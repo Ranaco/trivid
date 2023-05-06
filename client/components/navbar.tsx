@@ -115,7 +115,10 @@ const NavBar = () => {
                 gap: "20px",
               }}
             >
-              <IconButton aria-label="chat" onClick={wallet.handleConnect}>
+              <IconButton
+                aria-label="chat"
+                onClick={() => console.log(wallet.chainId)}
+              >
                 <IoChatbubbleEllipsesOutline color="white" />
               </IconButton>
               <IconButton aria-label="bell">

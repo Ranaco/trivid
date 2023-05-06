@@ -6,7 +6,7 @@ typechain
 typechain-types
 .next/
 client/node_modules/
-client/next-env.d.ts
+# client/next-env.d.ts
 client/package-lock.json
 
 
