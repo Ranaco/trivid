@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.9;
+pragma solidity >=0.7.0 <0.9.0;
 
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
+import '@openzeppelin/contracts/utils/Counters.sol';
 
-contract Trivid  ERC721URIStorage{
+contract Trivid is ERC721URIStorage{
   using Counters for Counters.Counter;
   
   address contractAddress = address(this);
@@ -16,12 +17,12 @@ contract Trivid  ERC721URIStorage{
     contractAddress = contractAdd;
   }
 
-  function mintToken(string memory tokenUri) public (uint256){
+  function mintToken(string memory tokenUri) public returns(uint256){
     require(contractAddress == msg.sender, "Only the contract owner can update the address");
     _tokenId.increment();
     uint256 currTokenId = _tokenId.current();
     _mint(contractAddress, currTokenId);
-    _setTokenUri(currTokenId, tokenUri);
+    _setTokenURI(currTokenId, tokenUri);
     return currTokenId;
   }
 

@@ -24,22 +24,20 @@ import {
   StyledInputBase,
 } from "./styled-components";
 import useTableDb from "../lib/hooks/useTableland";
-import uploadToIpfs from "../lib/sph-browser-upload";
+import { AppState } from "../pages/_app";
 
 const NavBar = () => {
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.down("sm"));
+  const { wallet, setWallet } = React.useContext(AppState);
 
   const router = useRouter();
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null
   );
 
-  if (typeof window !== "undefined") {
-  }
   const size = useMediaQuery(theme.breakpoints.down("md"));
   const lgSize = useMediaQuery(theme.breakpoints.down("lg"));
-
   const handleMenuOpen = (e: React.MouseEvent<HTMLElement>) => {
     setMenuAnchorEl(e.currentTarget);
   };
@@ -67,7 +65,7 @@ const NavBar = () => {
         gap={"15%"}
       >
         <MuiLink href="/">
-          <Typography variant="h5">One</Typography>
+          <Typography variant="h5">{"One"}</Typography>
         </MuiLink>
         <Toolbar
           disableGutters
@@ -117,7 +115,7 @@ const NavBar = () => {
                 gap: "20px",
               }}
             >
-              <IconButton aria-label="chat" onClick={useTableDb}>
+              <IconButton aria-label="chat" onClick={wallet.handleConnect}>
                 <IoChatbubbleEllipsesOutline color="white" />
               </IconButton>
               <IconButton aria-label="bell">
