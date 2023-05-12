@@ -6,7 +6,10 @@ import createEmotionCache from "../lib/createEmotionCache";
 import Layout, { ScrollBarStyle } from "../components/layouts/main";
 import theme from "../lib/theme";
 import detectEthereumProvider from "@metamask/detect-provider";
-import { formatBalance } from "../lib/hooks/utils/format";
+import { formatBalance, formatChainAsNum } from "../lib/hooks/utils/format";
+import "../styles/globals.css";
+import { AppContextState } from "../lib/types";
+import Web3 from "web3";
 
 interface EmotionAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -15,13 +18,6 @@ interface EmotionAppProps extends AppProps {
 export interface IProviderProps {
   children?: any;
 }
-
-type AppContextState = {
-  account: string;
-  balance: string;
-  chainId: number;
-  handleConnect: any;
-};
 
 export type AppContextValue = {
   wallet: AppContextState;
@@ -35,11 +31,24 @@ export const AppState = React.createContext<AppContextValue | undefined>(
 const localEmotionCache = createEmotionCache();
 
 const App: React.FC<EmotionAppProps> = (props) => {
+  const handleConnect = async () => {
+    await window.ethereum
+      .request({
+        method: "eth_requestAccounts",
+      })
+      .then((accounts: []) => {
+        updateWallet(accounts);
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
+
   const initialState: AppContextState = {
     account: "",
     balance: "",
     chainId: 0,
-    handleConnect: undefined,
+    handleConnect: handleConnect,
   };
   const [wallet, setWallet] = React.useState<AppContextState>(initialState);
 
@@ -52,6 +61,8 @@ const App: React.FC<EmotionAppProps> = (props) => {
       }
     };
 
+    console.log(wallet);
+
     const refreshChain = (chainId: any) => {
       setWallet((wallet) => ({ ...wallet, chainId }));
     };
@@ -63,7 +74,6 @@ const App: React.FC<EmotionAppProps> = (props) => {
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
-        console.log(accounts);
         refreshAccounts(accounts);
         window.ethereum.on("accountsChanged", refreshAccounts);
         window.ethereum.on("chainChanged", refreshChain);
@@ -72,11 +82,17 @@ const App: React.FC<EmotionAppProps> = (props) => {
 
     getProvider();
 
+    if (!wallet.account) {
+      router.replace("/login");
+    }
+
+    setWallet((props) => ({ handleConnect: handleConnect, ...props }));
+
     return () => {
       window.ethereum?.removeListener("accountsChanged", refreshAccounts);
       window.ethereum?.removeListener("chainChanged", refreshChain);
     };
-  }, []);
+  }, [wallet.account]);
 
   const updateWallet = async (accounts: any) => {
     const balance = formatBalance(
@@ -85,22 +101,13 @@ const App: React.FC<EmotionAppProps> = (props) => {
         params: [accounts[0], "latest"],
       })
     );
-    const chainId = await window.ethereum!.request({
-      method: "eth_chainId",
-    });
+    const chainId = formatChainAsNum(
+      await window.ethereum!.request({
+        method: "eth_chainId",
+      })
+    );
     const account = accounts[0];
-    setWallet({ account, balance, chainId, handleConnect: handleConnect });
-  };
-
-  const handleConnect = async () => {
-    await window.ethereum
-      .request({
-        method: "eth_requestAccounts",
-      })
-      .then((accounts: []) => {
-        updateWallet(accounts);
-      })
-      .catch((err: any) => {});
+    setWallet({ account, balance, chainId });
   };
 
   const {
@@ -110,7 +117,21 @@ const App: React.FC<EmotionAppProps> = (props) => {
     emotionCache = localEmotionCache,
   } = props;
 
-  return (
+  const getLayout = Component.getLayout;
+
+  return getLayout ? (
+    getLayout(
+      <CacheProvider value={emotionCache}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <ScrollBarStyle />
+          <AppState.Provider value={{ wallet, setWallet }}>
+            <Component {...pageProps} />
+          </AppState.Provider>
+        </ThemeProvider>
+      </CacheProvider>
+    )
+  ) : (
     <CacheProvider value={emotionCache}>
       <ThemeProvider theme={theme}>
         <CssBaseline />

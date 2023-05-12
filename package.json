@@ -1,13 +1,43 @@
 {
-  "name": "hardhat-project",
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
-    "hardhat": "^2.14.0"
+  "name": "trivid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
   },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ranaco/trivid.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ranaco/trivid/issues"
+  },
+  "homepage": "https://github.com/Ranaco/trivid#readme",
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.3",
-    "@tableland/evm": "^4.2.2",
-    "web3": "^1.9.0",
-    "webpack": "^5.82.0"
+    "@tableland/sdk": "^4.2.2",
+    "@truffle/deployer": "^3.3.14",
+    "@truffle/hdwallet-provider": "^2.1.10",
+    "@truffle/resolver": "^9.0.40",
+    "dotenv": "^16.0.3",
+    "ethers": "^5.7.2",
+    "truffle": "^5.8.4"
+  },
+  "devDependencies": {
+    "@typechain/truffle-v5": "^8.0.2",
+    "@types/chai": "^4.3.5",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.1.1",
+    "ts-node": "^10.9.1",
+    "typechain": "^8.1.1",
+    "typescript": "^5.0.4",
+    "web3": "^1.9.0"
   }
 }

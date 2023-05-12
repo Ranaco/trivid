@@ -1,13 +1,9 @@
 import * as React from "react";
+import WindowDimensionType from "./types/window-dimensions";
 
-type windowDimensionType = {
-  width: number;
-  height: number;
-};
-
-const getWindowDimensions = (): windowDimensionType => {
+const getWindowDimensions = (): WindowDimensionType => {
   const [windowDimensions, setWindowDimensions] =
-    React.useState<windowDimensionType>({
+    React.useState<WindowDimensionType>({
       width: 0,
       height: 0,
     });

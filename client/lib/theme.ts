@@ -1,10 +1,15 @@
 import { createTheme } from "@mui/material";
-import { Righteous } from "next/font/google";
+import { Righteous, M_PLUS_Rounded_1c } from "next/font/google";
 
 export const righteous = Righteous({
   subsets: ["latin"],
   weight: ["400"],
-  fallback: ["Helvetica"],
+  display: "auto",
+});
+
+export const mplus = M_PLUS_Rounded_1c({
+  subsets: ["latin"],
+  weight: ["100", "400", "300", "500", "700"],
   display: "auto",
 });
 
@@ -48,6 +53,7 @@ const theme = createTheme({
       "600": "rgba(13, 13, 15, 0.14)",
       "700": "#242933",
       "800": "rgba(36, 41, 51, 0.7)",
+      "100": "rgba(216, 222, 233, 0.1)",
     },
     secondary: {
       main: "#1c1d1f",

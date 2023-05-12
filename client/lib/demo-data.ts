@@ -5,13 +5,7 @@ import Apex from "../public/images/apex.jpg";
 import Acv from "../public/images/acv.jpg";
 
 import { StaticImageData } from "next/image";
-
-export type PreviewType = {
-  title: string;
-  creator: string;
-  tags: string[];
-  image: StaticImageData | string;
-};
+import PreviewType from "./types/preview";
 
 const data: PreviewType[] = [
   {

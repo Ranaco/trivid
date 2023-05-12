@@ -23,13 +23,18 @@ import {
   SearchIconWrapper,
   StyledInputBase,
 } from "./styled-components";
-import useTableDb from "../lib/hooks/useTableland";
+import { useInsertDB, useReadDB } from "../lib/hooks/useTableland";
 import { AppState } from "../pages/_app";
 
 const NavBar = () => {
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.down("sm"));
-  const { wallet, setWallet } = React.useContext(AppState);
+
+  const data = useReadDB({
+    params: ["name"],
+    qColumn: "id",
+    qVal: 0,
+  });
 
   const router = useRouter();
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
@@ -65,7 +70,7 @@ const NavBar = () => {
         gap={"15%"}
       >
         <MuiLink href="/">
-          <Typography variant="h5">{"One"}</Typography>
+          <Typography variant="h5">{"Trivid"}</Typography>
         </MuiLink>
         <Toolbar
           disableGutters
@@ -117,7 +122,7 @@ const NavBar = () => {
             >
               <IconButton
                 aria-label="chat"
-                onClick={() => console.log(wallet.chainId)}
+                onClick={() => router.push("/register")}
               >
                 <IoChatbubbleEllipsesOutline color="white" />
               </IconButton>
