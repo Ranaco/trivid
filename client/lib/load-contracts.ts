@@ -10,19 +10,17 @@ const loadContracts = async (web3: Web3) => {
 
   if (web3 !== undefined) {
     try {
-      const Trivid = new web3.eth.Contract(TrividAbi, TRIVID_ADD);
-      const UserContract = new web3.eth.Contract(
+      console.log("This is trivid address", TRIVID_ADD);
+      const trivid = new web3.eth.Contract(TrividAbi, TRIVID_ADD);
+      const userContract = new web3.eth.Contract(
         UserContractAbi,
         TRIVID_USER_ADD
       );
-      console.log(
-        "This is the trivid and userContract, ",
-        Trivid,
-        UserContract
-      );
-      return { Trivid, UserContract };
+      return { trivid, userContract };
     } catch (err) {
       throw new Error(err);
     }
   }
 };
+
+export default loadContracts;

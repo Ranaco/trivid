@@ -8,8 +8,12 @@ import theme from "../lib/theme";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { formatBalance, formatChainAsNum } from "../lib/hooks/utils/format";
 import "../styles/globals.css";
-import { AppContextState } from "../lib/types";
+import { AppContextState, AppContextValue } from "../lib/types";
 import Web3 from "web3";
+import loadContracts from "../lib/load-contracts";
+import { useReadDB } from "../lib/hooks/useTableland";
+import useLivePeerService from "../lib/livepeer";
+import { LivepeerConfig } from "@livepeer/react";
 
 interface EmotionAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -18,11 +22,6 @@ interface EmotionAppProps extends AppProps {
 export interface IProviderProps {
   children?: any;
 }
-
-export type AppContextValue = {
-  wallet: AppContextState;
-  setWallet: React.Dispatch<React.SetStateAction<AppContextState>>;
-};
 
 export const AppState = React.createContext<AppContextValue | undefined>(
   undefined
@@ -49,22 +48,22 @@ const App: React.FC<EmotionAppProps> = (props) => {
     balance: "",
     chainId: 0,
     handleConnect: handleConnect,
+    trivid: null,
+    userContract: null,
   };
   const [wallet, setWallet] = React.useState<AppContextState>(initialState);
 
   React.useEffect(() => {
-    const refreshAccounts = (accounts: any) => {
+    const refreshAccounts = (accounts: any, trivid: any, userContract: any) => {
       if (accounts.length > 0) {
-        updateWallet(accounts);
+        updateWallet(accounts, trivid, userContract);
       } else {
         setWallet(initialState);
       }
     };
 
-    console.log(wallet);
-
     const refreshChain = (chainId: any) => {
-      setWallet((wallet) => ({ ...wallet, chainId }));
+      setWallet((val) => ({ ...val, chainId }));
     };
 
     const getProvider = async () => {
@@ -74,7 +73,9 @@ const App: React.FC<EmotionAppProps> = (props) => {
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
-        refreshAccounts(accounts);
+        const web3 = new Web3(provider as any);
+        const { trivid, userContract } = await loadContracts(web3);
+        refreshAccounts(accounts, trivid, userContract);
         window.ethereum.on("accountsChanged", refreshAccounts);
         window.ethereum.on("chainChanged", refreshChain);
       }
@@ -94,7 +95,11 @@ const App: React.FC<EmotionAppProps> = (props) => {
     };
   }, [wallet.account]);
 
-  const updateWallet = async (accounts: any) => {
+  const updateWallet = async (
+    accounts: any,
+    trivid?: any,
+    userContract?: any
+  ) => {
     const balance = formatBalance(
       await window.ethereum!.request({
         method: "eth_getBalance",
@@ -107,7 +112,23 @@ const App: React.FC<EmotionAppProps> = (props) => {
       })
     );
     const account = accounts[0];
-    setWallet({ account, balance, chainId });
+    const isRegistered = await userContract.methods
+      .isRegistered(account)
+      .call();
+    setWallet((val) => ({
+      ...val,
+      account,
+      balance,
+      chainId,
+      userContract,
+      trivid,
+    }));
+    console.log(wallet);
+    if (!isRegistered) {
+      router.replace("/register");
+    } else {
+      //TODO:: Implement DB
+    }
   };
 
   const {
@@ -118,10 +139,12 @@ const App: React.FC<EmotionAppProps> = (props) => {
   } = props;
 
   const getLayout = Component.getLayout;
+  const client = useLivePeerService();
+  console.log(client);
 
   return getLayout ? (
     getLayout(
-      <CacheProvider value={emotionCache}>
+      <LivepeerConfig client={client}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <ScrollBarStyle />
@@ -129,20 +152,20 @@ const App: React.FC<EmotionAppProps> = (props) => {
             <Component {...pageProps} />
           </AppState.Provider>
         </ThemeProvider>
-      </CacheProvider>
+      </LivepeerConfig>
     )
   ) : (
-    <CacheProvider value={emotionCache}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <ScrollBarStyle />
-        <AppState.Provider value={{ wallet, setWallet }}>
-          <Layout router={router}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <ScrollBarStyle />
+      <AppState.Provider value={{ wallet, setWallet }}>
+        <Layout router={router}>
+          <LivepeerConfig client={client}>
             <Component {...pageProps} />
-          </Layout>
-        </AppState.Provider>
-      </ThemeProvider>
-    </CacheProvider>
+          </LivepeerConfig>
+        </Layout>
+      </AppState.Provider>
+    </ThemeProvider>
   );
 };
 

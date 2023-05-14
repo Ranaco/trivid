@@ -1,10 +1,18 @@
 import * as React from "react";
-import { Box, Button, Input, Stack, Typography } from "@mui/material";
+import { Box, Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import Layout from "../../components/layouts/secondary";
 import { Video } from "../../components/styled-components";
 import { FormSchema } from "../../lib/types";
+import { AppState } from "../_app";
+import { useRouter } from "next/router";
+import { useInsertDB, useReadDB } from "../../lib/hooks/useTableland";
+import { Spinner } from "@chakra-ui/react";
 
 const Register: React.FC = () => {
+  const router = useRouter();
+  const theme = useTheme();
+  const { wallet, setWallet } = React.useContext(AppState);
+  const [isProcessing, setIsProcessing] = React.useState<boolean>(false);
   const [formData, setFormData] = React.useState<FormSchema>({
     name: "",
     userName: "",
@@ -17,6 +25,49 @@ const Register: React.FC = () => {
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
     setFormData((val) => ({ ...val, [e.target.name]: e.target.value }));
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    setIsProcessing(true);
+    e.preventDefault();
+    console.log(wallet.userContract);
+    try {
+      console.log("This is the wallet account ", wallet.account);
+      await wallet.userContract.methods
+        .registerUser(wallet.account)
+        .send({ from: wallet.account, gasPrice: "400000000" })
+        .on("receipt", (rec: any) => {
+          console.log(rec);
+          useInsertDB({
+            params: ["id", "name", "userName", "bio", "email"],
+            values: [
+              String(wallet.account).substring(0, 10),
+              formData.name,
+              formData.userName,
+              formData.bio,
+              formData.email,
+            ],
+          }).then(({ insert }) => {
+            console.log("These are the insert params ", insert);
+          });
+          setWallet((val) => ({
+            ...val,
+            user: {
+              ...val.user,
+              name: formData.name,
+              userName: formData.userName,
+              bio: formData.bio,
+              email: formData.email,
+            },
+          }));
+          router.replace("/");
+        });
+    } catch (err) {
+      console.log(err);
+      setIsProcessing(false);
+    }
+
+    setIsProcessing(false);
   };
 
   return (
@@ -48,6 +99,14 @@ const Register: React.FC = () => {
         justifyContent="center"
         alignItems={"center"}
         width="40%"
+        sx={{
+          [theme.breakpoints.down("md")]: {
+            width: "60%",
+          },
+          [theme.breakpoints.down("sm")]: {
+            width: "80%",
+          },
+        }}
         gap="30px"
       >
         <Typography fontSize={"3.5em"}>Trivid</Typography>
@@ -64,12 +123,10 @@ const Register: React.FC = () => {
             alignItems: "center",
             gap: "50px",
           }}
-          onSubmit={(e) => {
-            e.preventDefault();
-            console.log(formData);
-          }}
+          onSubmit={submit}
         >
           <Input
+            disabled={isProcessing}
             required
             value={formData.name}
             name="name"
@@ -78,6 +135,7 @@ const Register: React.FC = () => {
             placeholder="Name"
           />
           <Input
+            disabled={isProcessing}
             required
             value={formData.userName}
             onChange={onChange}
@@ -86,6 +144,7 @@ const Register: React.FC = () => {
             placeholder="Username"
           />
           <Input
+            disabled={isProcessing}
             required
             onChange={onChange}
             value={formData.email}
@@ -94,6 +153,7 @@ const Register: React.FC = () => {
             placeholder="Email"
           />
           <Input
+            disabled={isProcessing}
             onChange={onChange}
             name="bio"
             fullWidth
@@ -101,13 +161,15 @@ const Register: React.FC = () => {
             value={formData.bio}
           />
           <Button
+            disabled={isProcessing}
             type="submit"
             fullWidth
             sx={{
+              height: "60px",
               color: "white",
             }}
           >
-            Create
+            {isProcessing ? <Spinner height={"40px"} width="40px" /> : "Create"}
           </Button>
         </form>
       </Stack>

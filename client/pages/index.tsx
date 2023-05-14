@@ -4,8 +4,11 @@ import PreviewComponent from "../components/preview-component";
 import data from "../lib/demo-data";
 import TitleBar from "../components/title-bar";
 import { MuiLink } from "../components/styled-components";
+import { AppState } from "./_app";
+import * as React from "react";
 
 const Homepage = () => {
+  const { wallet } = React.useContext(AppState);
   const theme = useTheme();
   return (
     <Stack>

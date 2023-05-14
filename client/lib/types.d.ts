@@ -1,10 +1,37 @@
+import { ReactClient, StudioLivepeerProvider } from "@livepeer/react";
+
+export type User = {
+  id: string;
+  userName: string;
+  name: string;
+  profile?: string;
+  email: string;
+  followersCount?: number;
+  followingCount?: number;
+  followers?: string;
+  following?: string;
+};
+
 export type AppContextState = {
   account: string;
   balance: string;
   chainId: number;
   handleConnect?: any;
   trivid?: any;
-  uesrContract?: any;
+  userContract?: any;
+  user?: User;
+};
+
+export type LivepeerStream = {
+  id: string;
+  title: string;
+  description: string;
+  link: string;
+};
+
+export type AppContextValue = {
+  wallet: AppContextState;
+  setWallet: React.Dispatch<React.SetStateAction<AppContextState>>;
 };
 
 export type FormSchema = {
@@ -16,7 +43,7 @@ export type FormSchema = {
 };
 
 export type Schema = {
-  id: number;
+  id: string;
   name: string;
   email: string;
   userName: string;

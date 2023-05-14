@@ -1,7 +1,6 @@
 import { Database, helpers } from "@tableland/sdk";
 import { Wallet } from "ethers";
 import { Schema } from "../types";
-import * as React from "react";
 
 const privateKey: any = process.env.PRIVATE_KEY;
 const HYPERSPACE_URL = process.env.HYPERSPACE_URL;
@@ -21,8 +20,8 @@ interface InsertProps {
 
 interface ReadProps {
   params: any[];
-  qColumn: string;
-  qVal: any;
+  qColumn?: string;
+  qVal?: any;
   qCondition?: string;
 }
 
@@ -36,7 +35,8 @@ export const useInsertDB = async ({ params, values }: InsertProps) => {
     ", "
   )}) VALUES (${placeholders})`;
 
-  const { results } = await db.prepare(SQL).bind(values).run();
+  const { meta: insert } = await db.prepare(SQL).bind(values).run();
+  return insert;
 };
 
 export const useReadDB = async ({
@@ -45,24 +45,24 @@ export const useReadDB = async ({
   qVal,
   qCondition = "=",
 }: ReadProps) => {
-  const [data, setData] = React.useState<any[]>([]);
   const isAll: boolean = params.length === 1 && params[0] === "*";
 
-  React.useEffect(() => {
-    const fetchDb = async () => {
-      const SQL: string = `SELECT ${
-        isAll ? "*" : params.join(", ")
-      } FROM ${TABLE_NAME} ${
-        !isAll ? "WHERE " + [qColumn, qCondition, qVal].join(" ") : ""
-      }`;
+  const fetchDb = async () => {
+    const SQL: string = `SELECT ${
+      isAll ? "*" : params.join(", ")
+    } FROM ${TABLE_NAME} ${
+      qColumn ? "WHERE " + [qColumn, qCondition, qVal].join(" ") : ""
+    }`;
 
-      const { results } = await db.prepare(SQL).all();
+    const { results } = await db.prepare(SQL).all();
 
-      console.log(results);
-      setData(results);
-    };
-    fetchDb();
-  }, []);
+    return results;
+    // return SQL;
+  };
+  return fetchDb();
+};
 
-  return data;
+export const dataBaseExists = async (signer: any) => {
+  const ex = await helpers.extractBaseUrl({ signer });
+  console.log(ex);
 };
