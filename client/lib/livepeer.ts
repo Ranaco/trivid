@@ -17,23 +17,17 @@ const useLivePeerService = () => {
   >(undefined);
 
   React.useEffect(() => {
-    const setupClient = async () => {
-      try {
-        const client = React.useMemo(() => {
-          return createReactClient({
-            provider: studioProvider({
-              apiKey: LIVEPEER_KEY,
-              baseUrl: "test_stream",
-            }),
-          });
-        }, []);
-        console.log(LIVEPEER_KEY);
-        setLivepeerProvider(client);
-      } catch (err) {
-        console.log("Some error");
-      }
-    };
-    setupClient();
+    try {
+      const client = createReactClient({
+        provider: studioProvider({
+          apiKey: LIVEPEER_KEY,
+        }),
+      });
+      setLivepeerProvider(client);
+      console.log("This is the livepeer key ", LIVEPEER_KEY);
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
   return livepeerProvider;
 };

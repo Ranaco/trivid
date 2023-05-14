@@ -140,19 +140,19 @@ const App: React.FC<EmotionAppProps> = (props) => {
 
   const getLayout = Component.getLayout;
   const client = useLivePeerService();
-  console.log(client);
+  if (client) {
+    console.log("This is the client ", client);
+  }
 
   return getLayout ? (
     getLayout(
-      <LivepeerConfig client={client}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <ScrollBarStyle />
-          <AppState.Provider value={{ wallet, setWallet }}>
-            <Component {...pageProps} />
-          </AppState.Provider>
-        </ThemeProvider>
-      </LivepeerConfig>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <ScrollBarStyle />
+        <AppState.Provider value={{ wallet, setWallet }}>
+          <Component {...pageProps} />
+        </AppState.Provider>
+      </ThemeProvider>
     )
   ) : (
     <ThemeProvider theme={theme}>
@@ -160,9 +160,7 @@ const App: React.FC<EmotionAppProps> = (props) => {
       <ScrollBarStyle />
       <AppState.Provider value={{ wallet, setWallet }}>
         <Layout router={router}>
-          <LivepeerConfig client={client}>
-            <Component {...pageProps} />
-          </LivepeerConfig>
+          <Component {...pageProps} />
         </Layout>
       </AppState.Provider>
     </ThemeProvider>
