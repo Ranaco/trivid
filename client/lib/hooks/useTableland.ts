@@ -26,8 +26,26 @@ interface ReadProps {
 }
 
 interface UpdateProps extends ReadProps {
-  values: any[];
+  values?: any[];
 }
+
+export const useDeleteDB = async ({
+  params,
+  qColumn,
+  qCondition = "=",
+  qVal,
+}: UpdateProps) => {
+  const pairs: string = params.map((e) => `${e} = NULL`).join(", ");
+
+  const SQL: string =
+    `UPDATE ${TABLE_NAME} SET ${pairs} WHERE ` +
+    [qColumn, qCondition, `'${qVal}'`].join(" ");
+  const { meta: insert, error } = await db.prepare(SQL).run();
+  if (error) {
+    throw new Error(error);
+  }
+  console.log("Deleted ", insert);
+};
 
 export const useUpdateDB = async ({
   params,
@@ -40,7 +58,6 @@ export const useUpdateDB = async ({
     throw new Error("Params and values' lengths are not equal");
   }
 
-  const placeholders: string = values.map(() => "?").join(", ");
   const pairs: string = params
     .map((e, index) => `${e} = '${values[index]}'`)
     .join(", ");
@@ -64,6 +81,8 @@ export const useInsertDB = async ({ params, values }: InsertProps) => {
   const SQL: string = `INSERT INTO ${TABLE_NAME} (${params.join(
     ", "
   )}) VALUES (${placeholders})`;
+
+  console.log(SQL);
 
   const { meta: insert } = await db.prepare(SQL).bind(values).run();
   return insert;

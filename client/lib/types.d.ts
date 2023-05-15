@@ -7,7 +7,7 @@ export type TriUser = {
   name: string;
   profile?: string;
   email: string;
-  stream?: string;
+  stream?: LivepeerStream;
   followersCount?: number;
   followingCount?: number;
   followers?: string;
@@ -21,7 +21,7 @@ export type AppContextState = {
   handleConnect?: any;
   trivid?: any;
   userContract?: any;
-  user?: User;
+  user?: TriUser;
 };
 
 export type LivepeerStream = {
@@ -43,13 +43,6 @@ export type FormSchema = {
   bio?: string;
   email: string;
   profile?: File;
-};
-
-export type previewtype = {
-  title: string;
-  creator: string;
-  tags: string[];
-  image: staticimagedata | string;
 };
 
 export type WindowDimensionType = {
