@@ -20,7 +20,7 @@ const Create = () => {
   });
 
   const updateStream = ({ id, key, title, description, playbackId }) => {
-    if (!prevStream) {
+    if (prevStream) {
       const localStream: LivepeerStream = {
         key,
         title,
@@ -49,7 +49,7 @@ const Create = () => {
 
     console.log("This is the prev stream status ", prevStream);
 
-    if (streamData && !prevStream) {
+    if (streamData) {
       setWallet((wallet) => {
         return {
           ...wallet,
@@ -77,7 +77,11 @@ const Create = () => {
 
   const startStream = async (e: React.FormEvent) => {
     e.preventDefault();
-    createStream();
+    if (!prevStream) {
+      createStream();
+    } else {
+      console.log("end");
+    }
   };
 
   const onChange = (

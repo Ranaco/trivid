@@ -3,16 +3,10 @@ import { Stack, Typography, Chip, Box } from "@mui/material";
 import Image, { StaticImageData } from "next/image";
 import { styled } from "@mui/material/styles";
 import { useTheme } from "@mui/material";
-import { PreviewType } from "../lib/demo-data";
 
 const StyledImage = styled(Image)(({}) => ({}));
 
-const PreviewComponent: React.FC<PreviewType> = ({
-  title,
-  creator,
-  tags,
-  image,
-}) => {
+const PreviewComponent = ({ title, creator, tags, image }) => {
   const theme = useTheme();
   return (
     <Stack
