@@ -24,6 +24,7 @@
     "@spheron/browser-upload": "^1.0.0",
     "@spheron/storage": "^1.0.13",
     "@tableland/sdk": "^4.2.1",
+    "@types/web3": "^1.2.2",
     "dotenv": "^16.0.3",
     "livepeer": "^2.4.4",
     "next": "^13.3.1",
@@ -31,7 +32,8 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
     "typescript": "^5.0.4",
-    "video-js": "^0.7.0"
+    "video-js": "^0.7.0",
+    "web3": "^1.10.0"
   },
   "devDependencies": {
     "@types/node": "^18.16.0",
