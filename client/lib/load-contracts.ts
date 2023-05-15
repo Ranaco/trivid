@@ -1,8 +1,7 @@
-import Web3 from "web3";
 import TrividJson from "../build/Trivid.json";
 import UserContractJson from "../build/TrividUserContract.json";
 
-const loadContracts = async (web3: Web3) => {
+const loadContracts = async (web3: any) => {
   const TRIVID_ADD = process.env.TRIVID_ADD;
   const TRIVID_USER_ADD = process.env.TRIVID_USER_ADD;
   const TrividAbi: any = TrividJson.abi;

@@ -42,10 +42,7 @@ const Create = () => {
   };
 
   React.useEffect(() => {
-    setPrevStream(
-      Boolean(wallet.user.stream) &&
-        JSON.stringify(wallet.user.stream) !== "null"
-    );
+    setPrevStream(Boolean(wallet.user.stream));
 
     console.log("This is the prev stream status ", prevStream);
 
@@ -77,7 +74,7 @@ const Create = () => {
 
   const startStream = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!prevStream) {
+    if (prevStream) {
       createStream();
     } else {
       console.log("end");
