@@ -5,9 +5,8 @@ import Apex from "../public/images/apex.jpg";
 import Acv from "../public/images/acv.jpg";
 
 import { StaticImageData } from "next/image";
-import PreviewType from "./types/preview";
 
-const data: PreviewType[] = [
+const data = [
   {
     title: "Bersek",
     creator: "Ranaco",
