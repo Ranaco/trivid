@@ -9,7 +9,6 @@ import detectEthereumProvider from "@metamask/detect-provider";
 import { formatBalance, formatChainAsNum } from "../lib/hooks/utils/format";
 import "../styles/globals.css";
 import { AppContextState, AppContextValue } from "../lib/types";
-import Web3 from "web3";
 import loadContracts from "../lib/load-contracts";
 import {
   createReactClient,
@@ -18,6 +17,7 @@ import {
   studioProvider,
 } from "@livepeer/react";
 import fetchUserData from "../lib/fetch-user-data";
+import Web3 from "web3";
 
 interface EmotionAppProps extends AppProps {
   emotionCache?: EmotionCache;

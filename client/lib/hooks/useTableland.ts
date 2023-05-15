@@ -44,6 +44,7 @@ export const useDeleteDB = async ({
   if (error) {
     throw new Error(error);
   }
+  console.log(SQL);
   console.log("Deleted ", insert);
 };
 

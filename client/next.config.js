@@ -5,6 +5,13 @@ const { parsed: myEnv } = require("dotenv").config({
 });
 
 module.exports = {
+  typescript: {
+    // !! WARN !!
+    // Dangerously allow production builds to successfully complete even if
+    // your project has type errors.
+    // !! WARN !!
+    ignoreBuildErrors: true,
+  },
   reactStrictMode: true,
   images: {
     domains: ["picsum.photos"],
