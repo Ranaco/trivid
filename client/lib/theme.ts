@@ -7,12 +7,6 @@ export const righteous = Righteous({
   display: "auto",
 });
 
-export const mplus = M_PLUS_Rounded_1c({
-  subsets: ["latin"],
-  weight: ["100", "400", "300", "500", "700"],
-  display: "auto",
-});
-
 const theme = createTheme({
   typography: {
     fontFamily: righteous.style.fontFamily,

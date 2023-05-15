@@ -3,7 +3,6 @@ import * as React from "react";
 import MetaFox from "../public/images/MetaMask_Fox.svg";
 import Image from "next/image";
 import { useTheme } from "@mui/material";
-import { mplus } from "../lib/theme";
 
 interface MetaButtonProps {
   onClick: React.MouseEventHandler<HTMLElement>;
