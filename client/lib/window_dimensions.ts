@@ -1,5 +1,5 @@
 import * as React from "react";
-import WindowDimensionType from "./types/window-dimensions";
+import { WindowDimensionType } from "./types";
 
 const getWindowDimensions = (): WindowDimensionType => {
   const [windowDimensions, setWindowDimensions] =
