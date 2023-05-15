@@ -35,33 +35,30 @@ const Register: React.FC = () => {
       console.log("This is the wallet account ", wallet.account);
       await wallet.userContract.methods
         .registerUser(wallet.account)
-        .send({ from: wallet.account, gasPrice: "400000000" })
-        .on("receipt", (rec: any) => {
-          console.log(rec);
-          useInsertDB({
-            params: ["id", "name", "userName", "bio", "email"],
-            values: [
-              String(wallet.account).substring(0, 10),
-              formData.name,
-              formData.userName,
-              formData.bio,
-              formData.email,
-            ],
-          }).then(({ insert }) => {
-            console.log("These are the insert params ", insert);
-          });
-          setWallet((val) => ({
-            ...val,
-            user: {
-              ...val.user,
-              name: formData.name,
-              userName: formData.userName,
-              bio: formData.bio,
-              email: formData.email,
-            },
-          }));
-          router.replace("/");
-        });
+        .send({ from: wallet.account, gasPrice: "400000000" });
+      useInsertDB({
+        params: ["id", "name", "userName", "bio", "email"],
+        values: [
+          String(wallet.account).substring(0, 10),
+          formData.name,
+          formData.userName,
+          formData.bio,
+          formData.email,
+        ],
+      }).then(({ insert }) => {
+        console.log("These are the insert params ", insert);
+        setWallet((val) => ({
+          ...val,
+          user: {
+            ...val.user,
+            name: formData.name,
+            userName: formData.userName,
+            bio: formData.bio,
+            email: formData.email,
+          },
+        }));
+        router.replace("/");
+      });
     } catch (err) {
       console.log(err);
       setIsProcessing(false);

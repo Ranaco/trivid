@@ -3,22 +3,18 @@ import { TextField, InputAdornment } from "@mui/material";
 import { BsClipboard, BsFillClipboardCheckFill } from "react-icons/bs";
 
 interface ReadOnlyFieldProps {
-  defaultValue: string;
   label: string;
+  value?: string;
 }
 
-const ReadOnlyField: React.FC<ReadOnlyFieldProps> = ({
-  defaultValue,
-  label,
-}) => {
+const ReadOnlyField: React.FC<ReadOnlyFieldProps> = ({ label, value }) => {
   const [isCopied, setIsCopied] = React.useState(false);
 
   return (
     <TextField
-      id={`id-${defaultValue}`}
       fullWidth
       focused={false}
-      defaultValue={defaultValue}
+      value={value}
       size="small"
       sx={{
         zIndex: "0",
@@ -40,7 +36,7 @@ const ReadOnlyField: React.FC<ReadOnlyFieldProps> = ({
                   cursor: "pointer",
                 }}
                 onClick={() => {
-                  navigator.clipboard.writeText(defaultValue).then(() => {
+                  navigator.clipboard.writeText(value).then(() => {
                     setIsCopied(true);
                   });
                 }}

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CacheProvider, EmotionCache } from "@emotion/react";
+import { EmotionCache } from "@emotion/react";
 import { AppProps } from "next/app";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import createEmotionCache from "../lib/createEmotionCache";
@@ -11,9 +11,13 @@ import "../styles/globals.css";
 import { AppContextState, AppContextValue } from "../lib/types";
 import Web3 from "web3";
 import loadContracts from "../lib/load-contracts";
-import { useReadDB } from "../lib/hooks/useTableland";
-import useLivePeerService from "../lib/livepeer";
-import { LivepeerConfig } from "@livepeer/react";
+import {
+  createReactClient,
+  defaultQueryClient,
+  LivepeerConfig,
+  studioProvider,
+} from "@livepeer/react";
+import fetchUserData from "../lib/fetch-user-data";
 
 interface EmotionAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -28,6 +32,7 @@ export const AppState = React.createContext<AppContextValue | undefined>(
 );
 
 const localEmotionCache = createEmotionCache();
+const LIVEPEER_KEY = process.env.LIVEPEER_KEY;
 
 const App: React.FC<EmotionAppProps> = (props) => {
   const handleConnect = async () => {
@@ -115,6 +120,7 @@ const App: React.FC<EmotionAppProps> = (props) => {
     const isRegistered = await userContract.methods
       .isRegistered(account)
       .call();
+    const user = await fetchUserData({ address: account });
     setWallet((val) => ({
       ...val,
       account,
@@ -122,6 +128,7 @@ const App: React.FC<EmotionAppProps> = (props) => {
       chainId,
       userContract,
       trivid,
+      user,
     }));
     console.log(wallet);
     if (!isRegistered) {
@@ -139,10 +146,12 @@ const App: React.FC<EmotionAppProps> = (props) => {
   } = props;
 
   const getLayout = Component.getLayout;
-  const client = useLivePeerService();
-  if (client) {
-    console.log("This is the client ", client);
-  }
+  const client = createReactClient({
+    provider: studioProvider({
+      apiKey: LIVEPEER_KEY,
+    }),
+    queryClient: defaultQueryClient(),
+  });
 
   return getLayout ? (
     getLayout(
@@ -150,7 +159,9 @@ const App: React.FC<EmotionAppProps> = (props) => {
         <CssBaseline />
         <ScrollBarStyle />
         <AppState.Provider value={{ wallet, setWallet }}>
-          <Component {...pageProps} />
+          <LivepeerConfig client={client}>
+            <Component {...pageProps} />
+          </LivepeerConfig>
         </AppState.Provider>
       </ThemeProvider>
     )
@@ -160,7 +171,9 @@ const App: React.FC<EmotionAppProps> = (props) => {
       <ScrollBarStyle />
       <AppState.Provider value={{ wallet, setWallet }}>
         <Layout router={router}>
-          <Component {...pageProps} />
+          <LivepeerConfig client={client}>
+            <Component {...pageProps} />
+          </LivepeerConfig>
         </Layout>
       </AppState.Provider>
     </ThemeProvider>

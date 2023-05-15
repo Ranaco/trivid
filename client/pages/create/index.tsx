@@ -1,27 +1,83 @@
 import * as React from "react";
 import { Stack, useTheme, Box, Input, Button } from "@mui/material";
-import { BsClipboard } from "react-icons/bs";
 import ReadOnlyField from "../../components/readonly-field";
 import { useCreateStream, Player } from "@livepeer/react";
+import { AppState } from "../_app";
+import { useInsertDB, useUpdateDB } from "../../lib/hooks/useTableland";
 import { LivepeerStream } from "../../lib/types";
 
 const Create = () => {
   const theme = useTheme();
+  const { wallet, setWallet } = React.useContext(AppState);
   const [stream, setStream] = React.useState<LivepeerStream>({
-    id: "",
     title: "",
     description: "",
-    link: "",
+    id: "",
   });
-  // const {
-  //   mutate: createStream,
-  //   data: streamData,
-  //   status,
-  //   isLoading,
-  // } = useCreateStream(stream.title ? { name: stream.title } : null);
+  const [prevStream, setPrevStream] = React.useState<boolean>(false);
+  const { mutate: createStream, data: streamData } = useCreateStream({
+    name: stream.title,
+  });
 
-  const startStream = (e: React.FormEvent) => {
+  const updateStream = ({ id, key, title, description, playbackId }) => {
+    if (!prevStream) {
+      const localStream: LivepeerStream = {
+        key,
+        title,
+        description,
+        id,
+        playbackId,
+      };
+
+      console.log("This is the local stream ", localStream);
+      useUpdateDB({
+        params: ["stream"],
+        values: [JSON.stringify(localStream)],
+        qColumn: "id",
+        qVal: wallet.account.substring(0, 10),
+      });
+    } else {
+      console.log("end");
+    }
+  };
+
+  React.useEffect(() => {
+    setPrevStream(
+      Boolean(wallet.user.stream) &&
+        JSON.stringify(wallet.user.stream) !== "null"
+    );
+
+    console.log("This is the prev stream status ", prevStream);
+
+    if (streamData && !prevStream) {
+      setWallet((wallet) => {
+        return {
+          ...wallet,
+          stream: {
+            description: stream.description,
+            id: streamData.id,
+            title: streamData.name,
+            key: streamData.streamKey,
+            playbackId: streamData.playbackId,
+          },
+        };
+      });
+      updateStream({
+        id: streamData.id,
+        playbackId: streamData.playbackId,
+        title: streamData.name,
+        description: stream.description,
+        key: streamData.streamKey,
+      });
+    } else {
+      console.log("end");
+      // updateStream(e);
+    }
+  }, [streamData, wallet.user]);
+
+  const startStream = async (e: React.FormEvent) => {
     e.preventDefault();
+    createStream();
   };
 
   const onChange = (
@@ -65,9 +121,22 @@ const Create = () => {
             },
           }}
         >
-          <ReadOnlyField defaultValue="KK" label="RTMP Ingest URL" />
-          <ReadOnlyField defaultValue="Something" label="SRT Ingest URL" />
-          <ReadOnlyField defaultValue="Playback" label="Playback URL" />
+          <ReadOnlyField
+            label="RTMP Ingest URL"
+            value="rtmp://rtmp.livepeer.com/live"
+          />
+          <ReadOnlyField
+            value={
+              streamData
+                ? `https://livepeercdn.studio/hls/${streamData.playbackId}/index.m3u8`
+                : ""
+            }
+            label="Playback url"
+          />
+          <ReadOnlyField
+            value={streamData ? streamData.streamKey : ""}
+            label="Key"
+          />
         </Box>
         <Box
           sx={{
@@ -87,11 +156,13 @@ const Create = () => {
               flexDirection: "column",
               gap: "30px",
             }}
+            onSubmit={startStream}
           >
             <Input
               placeholder="Title"
               fullWidth
               name="title"
+              required
               value={stream.title}
               onChange={onChange}
             />
@@ -102,7 +173,14 @@ const Create = () => {
               value={stream.description}
               onChange={onChange}
             />
-            <Button>Create</Button>
+            <Button
+              style={{
+                color: "white",
+              }}
+              type="submit"
+            >
+              {!prevStream ? "Create" : "End"}
+            </Button>
           </form>
         </Box>
       </Stack>
@@ -110,7 +188,18 @@ const Create = () => {
         flex="1"
         borderRadius="10px"
         bgcolor={theme.palette.primary["800"]}
-      ></Stack>
+        height="50%"
+        sx={{
+          aspectRatio: "16/9",
+        }}
+      >
+        <Player
+          aspectRatio="16to9"
+          playbackId={streamData?.playbackId}
+          title={streamData?.name}
+          autoPlay
+        />
+      </Stack>
     </Stack>
   );
 };

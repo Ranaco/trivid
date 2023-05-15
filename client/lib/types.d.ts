@@ -1,11 +1,13 @@
 import { ReactClient, StudioLivepeerProvider } from "@livepeer/react";
 
-export type User = {
+export type TriUser = {
   id: string;
+  bio?: string;
   userName: string;
   name: string;
   profile?: string;
   email: string;
+  stream?: string;
   followersCount?: number;
   followingCount?: number;
   followers?: string;
@@ -23,10 +25,11 @@ export type AppContextState = {
 };
 
 export type LivepeerStream = {
+  key?: string;
   id: string;
   title: string;
   description: string;
-  link: string;
+  playbackId?: string;
 };
 
 export type AppContextValue = {
@@ -40,20 +43,6 @@ export type FormSchema = {
   bio?: string;
   email: string;
   profile?: File;
-};
-
-export type Schema = {
-  id: string;
-  name: string;
-  email: string;
-  userName: string;
-  bio: string;
-  profile: string;
-  stream: string;
-  followersCount: number;
-  followingCount: number;
-  followers: string;
-  following: string;
 };
 
 export type previewtype = {

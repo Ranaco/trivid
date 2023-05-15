@@ -24,17 +24,10 @@ import {
   StyledInputBase,
 } from "./styled-components";
 import { useInsertDB, useReadDB } from "../lib/hooks/useTableland";
-import { AppState } from "../pages/_app";
 
 const NavBar = () => {
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const data = useReadDB({
-    params: ["name"],
-    qColumn: "id",
-    qVal: 0,
-  });
 
   const router = useRouter();
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(

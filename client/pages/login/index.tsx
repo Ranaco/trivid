@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box, Button, Typography, useTheme } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { AppState } from "../_app";
 import Layout from "../../components/layouts/secondary";
@@ -7,7 +7,6 @@ import { Video } from "../../components/styled-components";
 import MetamaskButton from "../../components/login-button";
 
 const Login = () => {
-  const theme = useTheme();
   const { wallet } = React.useContext(AppState);
   const router = useRouter();
 
