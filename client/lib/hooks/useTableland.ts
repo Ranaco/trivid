@@ -83,8 +83,6 @@ export const useInsertDB = async ({ params, values }: InsertProps) => {
     ", "
   )}) VALUES (${placeholders})`;
 
-  console.log(SQL);
-
   const { meta: insert } = await db.prepare(SQL).bind(values).run();
   return insert;
 };
@@ -101,7 +99,7 @@ export const useReadDB = async ({
 
   const fetchDb = async () => {
     const SQL: string = `SELECT ${
-      isAll ? "* " : params.join(", ")
+      isAll ? "*" : params.join(", ")
     }FROM ${TABLE_NAME} ${
       qColumn ? "WHERE " + [qColumn, qCondition, updatedVal].join(" ") : ""
     }`;

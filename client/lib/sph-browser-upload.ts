@@ -2,7 +2,7 @@ import { upload } from "@spheron/browser-upload";
 
 interface Props {
   file: File[];
-  onChunkUploaded(uploadedSize: number, totalSize: number): void;
+  onChunkUploaded?(uploadedSize: number, totalSize: number): void;
 }
 
 const uploadToIpfs = async ({
@@ -25,6 +25,8 @@ const uploadToIpfs = async ({
       onChunkUploaded: onChunkUploaded,
     }
   );
+
+  console.log({ bucketId, dynamicLinks, protocolLink, uploadId });
 
   return { bucketId, dynamicLinks, protocolLink, uploadId };
 };

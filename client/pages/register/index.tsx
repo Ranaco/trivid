@@ -30,9 +30,7 @@ const Register: React.FC = () => {
   const submit = async (e: React.FormEvent) => {
     setIsProcessing(true);
     e.preventDefault();
-    console.log(wallet.userContract);
     try {
-      console.log("This is the wallet account ", wallet.account);
       await wallet.userContract.methods
         .registerUser(wallet.account)
         .send({ from: wallet.account, gasPrice: "400000000" });
@@ -46,7 +44,6 @@ const Register: React.FC = () => {
           formData.email,
         ],
       }).then(({ insert }) => {
-        console.log("These are the insert params ", insert);
         setWallet((val) => ({
           ...val,
           user: {

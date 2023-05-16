@@ -16,7 +16,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(200).send({
       uploadToken,
     });
-    console.log(uploadToken);
   } catch (err) {
     res.send(err);
     console.log(err);

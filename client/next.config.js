@@ -14,7 +14,12 @@ module.exports = {
   },
   reactStrictMode: true,
   images: {
-    domains: ["picsum.photos"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
   },
   webpack(config) {
     config.plugins.push(new webpack.EnvironmentPlugin(myEnv));

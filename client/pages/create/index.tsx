@@ -9,6 +9,7 @@ import {
   useUpdateDB,
 } from "../../lib/hooks/useTableland";
 import { LivepeerStream } from "../../lib/types";
+import { Spinner } from "@chakra-ui/react";
 
 const Create = () => {
   const theme = useTheme();
@@ -18,14 +19,25 @@ const Create = () => {
     description: "",
     id: "",
   });
+  const [loading, setIsLoading] = React.useState<boolean>(true);
   const [prevStream, setPrevStream] = React.useState<boolean>(false);
-  const { mutate: createStream, data: streamData } = useCreateStream({
-    name: stream.title,
-  });
+  const { mutate: createStream, data: streamData } = useCreateStream(
+    stream
+      ? {
+          name: stream.title,
+        }
+      : undefined
+  );
 
   const endStream = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Starting  delete");
+    setPrevStream(false);
+    setStream({
+      title: "",
+      description: "",
+      id: "",
+    });
     useDeleteDB({
       params: ["stream"],
       qColumn: "id",
@@ -58,10 +70,12 @@ const Create = () => {
   };
 
   React.useEffect(() => {
-    setPrevStream(Boolean(wallet.user.stream));
-
-    if (prevStream) {
-      console.log("This is the prev stream status ", prevStream);
+    if (wallet.user) {
+      setPrevStream(Boolean(wallet?.user.stream));
+      if (prevStream) {
+        console.log("This is the prev stream status ", prevStream);
+      }
+      setIsLoading(false);
     }
 
     if (streamData && !prevStream) {
@@ -88,22 +102,21 @@ const Create = () => {
         key: streamData.streamKey,
       });
     } else {
-      setStream({
-        ...wallet.user.stream,
-      });
+      if (wallet.user) {
+        setStream({
+          ...wallet.user.stream,
+        });
+      }
     }
     return () => {
       setStream(undefined);
     };
-  }, [streamData, wallet.user]);
+  }, [streamData]);
 
   const startStream = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!prevStream) {
-      createStream();
-    } else {
-      console.log("end");
-    }
+    console.log(stream);
+    createStream();
   };
 
   const onChange = (
@@ -114,7 +127,7 @@ const Create = () => {
       [e.target.name]: e.target.value,
     }));
 
-  return (
+  return !loading ? (
     <Stack gap="10px" height="100%" width={"100%"} p="15px" overflow="scroll">
       <Stack
         overflow={"scroll"}
@@ -155,7 +168,7 @@ const Create = () => {
             value={
               streamData
                 ? `https://livepeercdn.studio/hls/${streamData.playbackId}/index.m3u8`
-                : stream.playbackId
+                : stream?.playbackId
                 ? `https://livepeercdn.studio/hls/${stream.playbackId}/index.m3u8`
                 : ""
             }
@@ -191,14 +204,14 @@ const Create = () => {
               fullWidth
               name="title"
               required
-              value={stream.title}
+              value={stream.title ?? ""}
               onChange={onChange}
             />
             <Input
               placeholder="Description"
               fullWidth
               name="description"
-              value={stream.description}
+              value={stream.description ?? ""}
               onChange={onChange}
             />
             <Button
@@ -230,6 +243,8 @@ const Create = () => {
         />
       </Stack>
     </Stack>
+  ) : (
+    <Spinner />
   );
 };
 

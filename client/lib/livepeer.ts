@@ -24,7 +24,6 @@ const useLivePeerService = () => {
         }),
       });
       setLivepeerProvider(client);
-      console.log("This is the livepeer key ", LIVEPEER_KEY);
     } catch (err) {
       console.log(err);
     }

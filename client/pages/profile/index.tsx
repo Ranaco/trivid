@@ -1,11 +1,56 @@
+import * as React from "react";
 import { Box, Stack, Typography, Avatar, useTheme } from "@mui/material";
 import { MuiImage } from "../../components/styled-components";
 import { FcPhotoReel } from "react-icons/fc";
+import { AppState } from "../_app";
+import { Spinner } from "@chakra-ui/react";
+import { TriUser } from "../../lib/types";
+import { Player } from "@livepeer/react";
+import { useDropzone } from "react-dropzone";
+import Image from "next/image";
+import ProfileAvatar from "../../components/profile-avatar";
+import { useUpdateDB } from "../../lib/hooks/useTableland";
+import uploadToIpfs from "../../lib/sph-browser-upload";
 
 const Profile = () => {
   const theme = useTheme();
+  const { wallet, setWallet } = React.useContext(AppState);
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [user, setUser] = React.useState<TriUser | undefined>(undefined);
+  const [file, setFile] = React.useState<any[] | undefined>();
 
-  return (
+  const uploadProfile = async () => {
+    console.log("This is the file", file);
+    const { bucketId, dynamicLinks, protocolLink, uploadId } =
+      await uploadToIpfs({ file: file });
+    const profile = protocolLink + "/" + file[0].path;
+    await useUpdateDB({
+      params: ["profile"],
+      values: [profile],
+      qColumn: "id",
+      qVal: String(wallet.account).substring(0, 10),
+    }).then(() => {
+      setWallet((wal) => ({
+        ...wal,
+        user: {
+          ...wal.user,
+          profile,
+        },
+      }));
+    });
+  };
+  React.useEffect(() => {
+    if (wallet.user) {
+      setIsLoading(false);
+      setUser(wallet.user);
+    }
+
+    return () => setUser(undefined);
+  }, [wallet.user]);
+
+  return isLoading ? (
+    <Spinner />
+  ) : (
     <Box
       width="calc(100vw - 40px)"
       sx={{
@@ -46,12 +91,11 @@ const Profile = () => {
             },
           }}
         >
-          <Avatar
-            src={"https://picsum.photos/500"}
-            sx={{
-              height: "200px",
-              width: "200px",
-            }}
+          <ProfileAvatar
+            uploadProfile={uploadProfile}
+            file={file}
+            profile={wallet.user.profile}
+            setFile={setFile}
           />
           <Stack
             pt="80px"
@@ -63,38 +107,59 @@ const Profile = () => {
             }}
           >
             <Typography fontSize={"2em"} fontWeight="bold">
-              Kevin Smith
+              {user.name}
             </Typography>
-            <Typography color="grey">
-              Advisor and Consultant at Stripe Inc.
-            </Typography>
+            <Typography color="grey">{user.bio}</Typography>
           </Stack>
         </Stack>
-        <Stack
-          alignItems={"center"}
-          justifyContent="center"
-          textAlign={"center"}
-          sx={{
-            [theme.breakpoints.down("sm")]: {
-              width: "100vw",
-            },
-          }}
-          width={"100%"}
-        >
-          <Typography fontSize="3em" pt="20px">
-            Nothing to show
-          </Typography>
+        {!user.stream ? (
           <Stack
-            p="30px"
-            border={`1px solid ${theme.palette.secondary.light}`}
-            width="50%"
-            borderRadius={"10px"}
-            justifyContent="center"
             alignItems={"center"}
+            justifyContent="center"
+            textAlign={"center"}
+            sx={{
+              [theme.breakpoints.down("sm")]: {
+                width: "100vw",
+              },
+            }}
+            width={"100%"}
           >
-            <FcPhotoReel size={"150px"} color={theme.palette.secondary.light} />
+            <Typography fontSize="3em" pt="20px">
+              Nothing to show
+            </Typography>
+            <Stack
+              p="30px"
+              border={`1px solid ${theme.palette.secondary.light}`}
+              width="50%"
+              borderRadius={"10px"}
+              justifyContent="center"
+              alignItems={"center"}
+            >
+              <FcPhotoReel
+                size={"150px"}
+                color={theme.palette.secondary.light}
+              />
+            </Stack>
           </Stack>
-        </Stack>
+        ) : (
+          <Box
+            sx={{
+              [theme.breakpoints.down("sm")]: {
+                width: "calc(100vw - 500px)",
+              },
+              aspectRatio: "16/9",
+            }}
+            pt="50px"
+            width="calc(100vw - 500px)"
+          >
+            <Player
+              objectFit="cover"
+              aspectRatio="16to9"
+              playbackId={user.stream.playbackId}
+              title={user.stream.title}
+            />
+          </Box>
+        )}
       </Stack>
     </Box>
   );

@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material";
 
 const StyledImage = styled(Image)(({}) => ({}));
 
-const PreviewComponent = ({ title, creator, tags, image }) => {
+const PreviewComponent = ({ title, creator, image }) => {
   const theme = useTheme();
   return (
     <Stack
@@ -47,11 +47,6 @@ const PreviewComponent = ({ title, creator, tags, image }) => {
       <Typography color={"grey"} fontSize="0.8em">
         {creator}
       </Typography>
-      <Stack direction={"row"} mt={"5px"} gap={"10px"}>
-        {tags.map((e, index) => (
-          <Chip label={e} key={index} />
-        ))}
-      </Stack>
     </Stack>
   );
 };

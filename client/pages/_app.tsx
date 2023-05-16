@@ -130,7 +130,6 @@ const App: React.FC<EmotionAppProps> = (props) => {
       trivid,
       user,
     }));
-    console.log(wallet);
     if (!isRegistered) {
       router.replace("/register");
     } else {
