@@ -15,6 +15,7 @@ const Create = () => {
   const theme = useTheme();
   const { wallet, setWallet } = React.useContext(AppState);
   const [stream, setStream] = React.useState<LivepeerStream>({
+    address: wallet.account,
     title: "",
     description: "",
     id: "",
@@ -34,6 +35,7 @@ const Create = () => {
     console.log("Starting  delete");
     setPrevStream(false);
     setStream({
+      address: wallet.account,
       title: "",
       description: "",
       id: "",
@@ -47,6 +49,7 @@ const Create = () => {
 
   const updateStream = ({
     id,
+    address,
     key,
     title,
     description,
@@ -58,6 +61,7 @@ const Create = () => {
       description,
       id,
       playbackId,
+      address,
     };
 
     console.log("This is the local stream ", localStream);
@@ -85,6 +89,7 @@ const Create = () => {
           user: {
             ...wallet.user,
             stream: {
+              address: wallet.account,
               description: stream.description,
               id: streamData.id,
               title: streamData.name,
@@ -95,10 +100,11 @@ const Create = () => {
         };
       });
       updateStream({
+        address: wallet.account,
         id: streamData.id,
         playbackId: streamData.playbackId,
         title: streamData.name,
-        description: stream.description,
+        description: stream.description ?? "",
         key: streamData.streamKey,
       });
     } else {
@@ -109,13 +115,16 @@ const Create = () => {
       }
     }
     return () => {
-      setStream(undefined);
+      setStream({
+        description: "",
+        id: "",
+        title: "",
+      });
     };
   }, [streamData]);
 
   const startStream = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(stream);
     createStream();
   };
 
@@ -175,7 +184,9 @@ const Create = () => {
             label="Playback url"
           />
           <ReadOnlyField
-            value={streamData ? streamData.streamKey : stream.key}
+            value={
+              streamData ? streamData.streamKey : stream?.key ? stream.key : ""
+            }
             label="Key"
           />
         </Box>
@@ -204,14 +215,14 @@ const Create = () => {
               fullWidth
               name="title"
               required
-              value={stream.title ?? ""}
+              value={stream.title || ""}
               onChange={onChange}
             />
             <Input
               placeholder="Description"
               fullWidth
               name="description"
-              value={stream.description ?? ""}
+              value={stream.description || ""}
               onChange={onChange}
             />
             <Button

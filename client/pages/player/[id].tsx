@@ -10,17 +10,59 @@ import {
   TextField,
   IconButton,
 } from "@mui/material";
-import { Video } from "../../components/styled-components";
 import { useRouter } from "next/router";
 import { IoMdSend } from "react-icons/io";
+import { Player as PeerPlayer } from "@livepeer/react";
+import { useReadDB } from "../../lib/hooks/useTableland";
+import { LivepeerStream, TriUser } from "../../lib/types";
 
 const Player = () => {
   const theme = useTheme();
   const router = useRouter();
 
   const id = router.query.id;
+  const [user, setUser] = React.useState<TriUser[]>([]);
+  const [loading, setLoading] = React.useState(true);
 
-  return (
+  const fetchData = async () => {
+    const results: TriUser[] = await useReadDB({ params: ["*"] });
+    const streams: LivepeerStream[] = results.map((e) => e.stream);
+
+    const stream: LivepeerStream = streams.filter(
+      (e) => e.playbackId === id
+    )[0];
+
+    if (stream) {
+      const address = stream.address;
+
+      const userData: TriUser[] = await useReadDB({
+        params: ["*"],
+        qColumn: "id",
+        qVal: String(address).substring(0, 10),
+      });
+      console.log("This is from the usepage", userData);
+      if (userData) {
+        setUser(userData);
+        setLoading(false);
+      }
+    }
+
+    console.log(streams);
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
+
+  return loading ? (
+    <Box
+      height={"calc(100vh - 50px)"}
+      width={"100vw"}
+      display="flex"
+      justifySelf={"center"}
+      alignItems="center"
+    />
+  ) : (
     <Stack
       gap={"20px"}
       direction={"row"}
@@ -47,28 +89,23 @@ const Player = () => {
           },
         }}
       >
-        <Video
-          autoPlay
-          controls
-          sx={{
-            aspectRatio: "16/9",
-            flex: "1",
-          }}
-        >
-          <source
-            src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-            type="video/mp4"
+        <Box zIndex={0}>
+          <PeerPlayer
+            playbackId={user[0].stream ? user[0].stream.playbackId : undefined}
+            autoPlay
+            loop
+            aspectRatio={"16to9"}
           />
-        </Video>
+        </Box>
         <Stack width="100%" ml={"20px"} pt={"10px"}>
           <Typography fontSize={"1.4em"} fontFamily="sans-serif">
-            1000 miles of Sebring stream with Golden Mike - 2022
+            {user[0].stream.title}
           </Typography>
           <Stack gap="20px" direction="row" pt="10px">
-            <Avatar src="https://picsum.photos/300" />
+            <Avatar src={user[0].profile} />
             <Stack direction={"column"}>
               <Typography variant="caption" fontWeight={"bold"}>
-                Mike Thorsey
+                {user[0].name}
                 <Chip
                   onClick={() => {
                     console.log("hello");

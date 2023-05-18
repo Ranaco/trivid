@@ -7,6 +7,7 @@ export type TriUser = {
   name: string;
   profile?: string;
   email: string;
+  subscriberCount?: number;
   stream?: LivepeerStream;
   followersCount?: number;
   followingCount?: number;
@@ -25,7 +26,9 @@ export type AppContextState = {
 };
 
 export type LivepeerStream = {
+  address?: string;
   key?: string;
+  comments?: string[];
   id: string;
   title: string;
   description: string;

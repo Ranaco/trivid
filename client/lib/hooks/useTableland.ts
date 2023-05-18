@@ -99,7 +99,7 @@ export const useReadDB = async ({
 
   const fetchDb = async () => {
     const SQL: string = `SELECT ${
-      isAll ? "*" : params.join(", ")
+      isAll ? "* " : params.join(", ")
     }FROM ${TABLE_NAME} ${
       qColumn ? "WHERE " + [qColumn, qCondition, updatedVal].join(" ") : ""
     }`;
@@ -107,8 +107,8 @@ export const useReadDB = async ({
     const { results, error } = await db.prepare(SQL).all();
     console.log("This was the sql", SQL);
 
+    console.log(results);
     return results;
-    // return SQL;
   };
   return fetchDb();
 };

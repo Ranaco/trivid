@@ -1,13 +1,11 @@
 import * as React from "react";
-import { Box, Stack, Typography, Avatar, useTheme } from "@mui/material";
+import { Box, Stack, Typography, useTheme } from "@mui/material";
 import { MuiImage } from "../../components/styled-components";
 import { FcPhotoReel } from "react-icons/fc";
 import { AppState } from "../_app";
 import { Spinner } from "@chakra-ui/react";
 import { TriUser } from "../../lib/types";
 import { Player } from "@livepeer/react";
-import { useDropzone } from "react-dropzone";
-import Image from "next/image";
 import ProfileAvatar from "../../components/profile-avatar";
 import { useUpdateDB } from "../../lib/hooks/useTableland";
 import uploadToIpfs from "../../lib/sph-browser-upload";
@@ -21,8 +19,9 @@ const Profile = () => {
 
   const uploadProfile = async () => {
     console.log("This is the file", file);
-    const { bucketId, dynamicLinks, protocolLink, uploadId } =
-      await uploadToIpfs({ file: file });
+    const { protocolLink } = await uploadToIpfs({
+      file: file,
+    });
     const profile = protocolLink + "/" + file[0].path;
     await useUpdateDB({
       params: ["profile"],
@@ -150,10 +149,10 @@ const Profile = () => {
               aspectRatio: "16/9",
             }}
             pt="50px"
-            width="calc(100vw - 500px)"
+            width="500px"
           >
             <Player
-              objectFit="cover"
+              objectFit="contain"
               aspectRatio="16to9"
               playbackId={user.stream.playbackId}
               title={user.stream.title}

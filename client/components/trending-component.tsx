@@ -1,5 +1,6 @@
 import { Typography, Box, Stack, useTheme } from "@mui/material";
 import * as React from "react";
+import { Video } from "./styled-components";
 
 const TrendingComponent = () => {
   const theme = useTheme();
@@ -65,7 +66,18 @@ const TrendingComponent = () => {
           height={"100%"}
           bgcolor={theme.palette.secondary.main}
           borderRadius="20px"
-        />
+        >
+          <Video
+            loop
+            src="/videos/home.mp4"
+            autoPlay
+            muted
+            sx={{
+              height: "100%",
+              width: "100%",
+            }}
+          />
+        </Box>
       </Box>
     </Stack>
   );

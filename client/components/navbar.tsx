@@ -23,7 +23,6 @@ import {
   SearchIconWrapper,
   StyledInputBase,
 } from "./styled-components";
-import { useInsertDB, useReadDB } from "../lib/hooks/useTableland";
 
 const NavBar = () => {
   const theme = useTheme();
@@ -115,7 +114,7 @@ const NavBar = () => {
             >
               <IconButton
                 aria-label="chat"
-                onClick={() => router.push("/register")}
+                onClick={() => router.push("/player/30")}
               >
                 <IoChatbubbleEllipsesOutline color="white" />
               </IconButton>

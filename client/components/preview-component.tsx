@@ -1,13 +1,9 @@
 import * as React from "react";
-import { Stack, Typography, Chip, Box } from "@mui/material";
-import Image, { StaticImageData } from "next/image";
-import { styled } from "@mui/material/styles";
-import { useTheme } from "@mui/material";
+import { Stack, Typography, Box } from "@mui/material";
+import { Player } from "@livepeer/react";
 
-const StyledImage = styled(Image)(({}) => ({}));
-
-const PreviewComponent = ({ title, creator, image }) => {
-  const theme = useTheme();
+const PreviewComponent = ({ title, playbackId }) => {
+  console.log(playbackId);
   return (
     <Stack
       sx={{
@@ -17,36 +13,29 @@ const PreviewComponent = ({ title, creator, image }) => {
       }}
     >
       <Box
-        bgcolor={"blue"}
         maxHeight={"170px"}
         borderRadius={"5px"}
         sx={{
           overflow: "hidden",
         }}
       >
-        <StyledImage
-          sx={{
-            transition: theme.transitions.create("scale"),
-            ":hover": {
-              scale: "1.08",
-            },
+        <Box />
+        <Player
+          objectFit="contain"
+          aspectRatio="16to9"
+          playbackId={playbackId}
+          autoPlay
+          muted
+          loop
+          controls={{
+            autohide: 0,
           }}
-          width={2900 / 5}
-          height={2700 / 15}
-          style={{
-            objectFit: "contain",
-            minWidth: "280px",
-            aspectRatio: "16/9",
-            maxWidth: "300px",
-          }}
-          alt="title"
-          src={image}
+          showPipButton={false}
+          showTitle={false}
         />
       </Box>
       {title}
-      <Typography color={"grey"} fontSize="0.8em">
-        {creator}
-      </Typography>
+      <Typography color={"grey"} fontSize="0.8em"></Typography>
     </Stack>
   );
 };
